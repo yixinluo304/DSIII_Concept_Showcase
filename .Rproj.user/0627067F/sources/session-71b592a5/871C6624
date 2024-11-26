@@ -1,0 +1,32 @@
+{
+    "id": "871C6624",
+    "path": "~/DSIII_Showcase_Yixin/index.qmd",
+    "project_path": "index.qmd",
+    "type": "quarto_markdown",
+    "hash": "1174867322",
+    "contents": "",
+    "dirty": false,
+    "created": 1732584141344.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "rmdVisualMode": "false",
+        "rmdVisualWrapConfigured": "true",
+        "source_window_id": "",
+        "Source": "Source",
+        "docOutlineVisible": "1",
+        "rmdVisualCollapsedChunks": "",
+        "rmdVisualModeLocation": "1340:939.5",
+        "docOutlineSize": "109",
+        "cursorPosition": "133,11",
+        "scrollLine": "131"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1732589773,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1732590239162,
+    "read_only": false,
+    "read_only_alternatives": []
+}

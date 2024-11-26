@@ -1,0 +1,25 @@
+"0","# Calculate mean scores for each aspect"
+"0","mean_scores = aspect_scores_df[[col for col in aspect_scores_df.columns if '.score' in col]].mean()"
+"0",""
+"0","# Prepare heatmap data"
+"0","heatmap_data = pd.DataFrame(mean_scores).T"
+"0","heatmap_data.columns = [col.split('.')[0] for col in heatmap_data.columns]"
+"0",""
+"0","# Plot heatmap"
+"0","plt.figure(figsize=(10, 4))"
+"0","sns.heatmap(heatmap_data, annot=True, cmap=""coolwarm"", cbar=True, fmt="".2f"")"
+"1","<Figure size 1000x400 with 0 Axes>
+"
+"1","<Axes: >
+"
+"0","plt.title(""Mean Sentiment Scores for Aspects"")"
+"1","Text(0.5, 1.0, 'Mean Sentiment Scores for Aspects')
+"
+"0","plt.xlabel(""Aspects"")"
+"0","plt.ylabel("""")"
+"1","Text(0.5, 14.722222222222216, 'Aspects')
+"
+"0","plt.show()"
+"1","Text(95.72222222222221, 0.5, '')
+"
+"0",""

@@ -1,0 +1,31 @@
+"0","# Count occurrences of each label for each aspect"
+"0","label_columns = [col for col in aspect_scores_df.columns if '.label' in col]"
+"0","label_counts = {}"
+"0",""
+"0","for col in label_columns:"
+"0","    aspect = col.split('.')[0]"
+"0","    label_counts[aspect] = aspect_scores_df[col].value_counts()"
+"0","    "
+"0","# Convert to DataFrame"
+"0","label_counts_df = pd.DataFrame(label_counts).fillna(0)"
+"0",""
+"0","# Plot a bar chart"
+"0","label_counts_df.plot(kind='bar', figsize=(12, 6), colormap='viridis')"
+"0","plt.title(""Sentiment Distribution Across Aspects"")"
+"1","<Axes: >
+"
+"0","plt.xlabel(""Sentiment Labels"")"
+"1","Text(0.5, 1.0, 'Sentiment Distribution Across Aspects')
+"
+"0","plt.ylabel(""Count"")"
+"1","Text(0.5, 0, 'Sentiment Labels')
+"
+"0","plt.xticks(rotation=0)"
+"1","Text(0, 0.5, 'Count')
+"
+"0","plt.legend(title=""Aspects"", loc='upper right')"
+"1","(array([0, 1, 2]), [Text(0, 0, 'NEGATIVE'), Text(1, 0, 'Not Mentioned'), Text(2, 0, 'POSITIVE')])
+"
+"0","plt.show()"
+"1","<matplotlib.legend.Legend object at 0x2a0381810>
+"

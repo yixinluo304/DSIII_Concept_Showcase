@@ -1,0 +1,21 @@
+"0","import plotly.express as px"
+"0",""
+"0","# Prepare data for the sunburst chart"
+"0","label_data = []"
+"0","for aspect in ['location', 'service', 'room', 'staff']:"
+"0","    labels = aspect_scores_df[f'{aspect}.label'].value_counts()"
+"0","    for label, count in labels.items():"
+"0","        label_data.append({'Aspect': aspect, 'Label': label, 'Count': count})"
+"0","        "
+"0","label_df = pd.DataFrame(label_data)"
+"0",""
+"0","# Sunburst chart"
+"0","fig = px.sunburst(label_df, path=['Aspect', 'Label'], values='Count',"
+"0","                  title=""Aspect-Based Sentiment Distribution (Sunburst)"","
+"0","                  color='Count', color_continuous_scale='Viridis')"
+"0","fig.show()"
+"1","huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+	- Avoid using `tokenizers` before the fork if possible
+	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+"
