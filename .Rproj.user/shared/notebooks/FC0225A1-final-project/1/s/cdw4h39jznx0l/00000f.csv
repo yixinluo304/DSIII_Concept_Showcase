@@ -1,0 +1,6 @@
+"0",""
+"0","# Directory containing the GeoJSON files"
+"0","geojson_dir <- ""./data-spatial"""
+"0",""
+"0","# Get a list of GeoJSON file paths"
+"0","geojson_files <- list.files(path = geojson_dir, pattern = ""\\.geojson$"", full.names = TRUE)"

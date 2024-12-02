@@ -1,0 +1,7 @@
+"0","# Get file paths"
+"0","geojson_dir <- ""./data-spatial"""
+"0","geojson_files <- list.files(path = geojson_dir, pattern = ""\\.geojson$"", full.names = TRUE)"
+"0",""
+"0","# Read files into list"
+"0","geojson_list <- lapply(geojson_files, st_read, quiet = TRUE)"
+"0","names(geojson_list) <- basename(geojson_files)"

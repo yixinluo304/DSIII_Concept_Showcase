@@ -1,0 +1,25 @@
+# Required packages
+library(shiny)
+library(leaflet)
+library(sf)
+library(dplyr)
+library(plotly)
+library(DT)
+library(tidyr)
+
+# ============= Data Preprocessing =============
+# importing data
+df <- read_excel("data/AidDatasGlobalChineseDevelopmentFinanceDataset_v3.0.xlsx", sheet = "GCDF_3.0", col_names = TRUE)
+df <- as.data.frame(df)
+
+# Directory containing the GeoJSON files
+geojson_dir <- "./data-spatial"
+
+# Get a list of GeoJSON file paths
+geojson_files <- list.files(path = geojson_dir, pattern = "\\.geojson$", full.names = TRUE)
+
+geojson_list <- lapply(geojson_files, st_read, quiet = TRUE)
+
+# Name each element in the list with the corresponding file name (optional)
+names(geojson_list) <- basename(geojson_files)
+

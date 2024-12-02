@@ -1,0 +1,9 @@
+"0","library(here)"
+"0","library(sf)"
+"0","library(leaflet)"
+"0","library(tidyverse)"
+"0",""
+"0","l <- sf::st_read(here(""fall_2024/activities/Liquor_Licenses.geojson"")) %>%"
+"0","      st_transform(crs = 4326)"
+"2","Error: Cannot open ""/Users/yixin/DSIII_Showcase_Yixin/fall_2024/activities/Liquor_Licenses.geojson""; The file doesn't seem to exist.
+"

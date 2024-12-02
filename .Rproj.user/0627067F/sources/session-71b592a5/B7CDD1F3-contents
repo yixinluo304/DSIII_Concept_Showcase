@@ -1,0 +1,13 @@
+# Required packages
+library(shiny)
+library(leaflet)
+library(sf)
+library(dplyr)
+library(plotly)
+library(DT)
+library(tidyr)
+
+# ============= Data Preprocessing =============
+# Read and clean data
+# Note: Adjust file paths according to your project structure
+combined_geojson <- st_read("data/combined_geojson.geojson")

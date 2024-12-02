@@ -1,0 +1,200 @@
+# Required packages
+library(shiny)
+library(leaflet)
+library(sf)
+library(dplyr)
+library(plotly)
+library(DT)
+library(tidyr)
+
+# ============= Data Preprocessing =============
+# Read and clean data
+# Note: Adjust file paths according to your project structure
+combined_geojson <- st_read("data/combined_geojson.geojson")
+
+# Clean and prepare data
+combined_geojson_clean <- combined_geojson %>%
+  # Fix invalid geometries
+  st_make_valid() %>%
+  # Remove any rows with NA geometries
+  filter(!st_is_empty(.)) %>%
+  # Convert amounts to millions for easier display
+  mutate(
+    Amount_Millions = Amount..Constant.USD.2021. / 1e6,
+    # Ensure all text columns are character type
+    Sector.Name = as.character(Sector.Name),
+    Status = as.character(Status),
+    `Recipient Region` = as.character(`Recipient Region`)
+  ) %>%
+  # Remove any rows with NA in crucial columns
+  filter(!is.na(Amount_Millions),
+         !is.na(Status),
+         !is.na(`Recipient Region`))
+
+# ============= Helper Functions =============
+# Format currency values
+format_currency <- function(x) {
+  paste0("$", formatC(x, format="f", digits=1, big.mark=","))
+}
+
+# ============= Shiny UI =============
+ui <- fluidPage(
+  # Add custom CSS
+  tags$head(
+    tags$style(HTML("
+      .well { background-color: #f8f9fa; border: none; border-radius: 8px; }
+      .number-box { font-size: 24px; font-weight: bold; text-align: center; }
+      .leaflet-container { border-radius: 8px; }
+    "))
+  ),
+  
+  titlePanel("China Development Finance Projects"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("region_filter",
+                  "Filter by Region:",
+                  choices = c("All", sort(unique(combined_geojson_clean$`Recipient Region`)))),
+      
+      selectInput("sector_filter",
+                  "Filter by Sector:",
+                  choices = c("All", sort(unique(combined_geojson_clean$Sector.Name)))),
+      
+      checkboxGroupInput("status_filter",
+                         "Project Status:",
+                         choices = sort(unique(combined_geojson_clean$Status))),
+      
+     ls sliderInput("amount_filter",
+                  "Investment Amount (USD Millions):",
+                  min = 0,
+                  max = max(combined_geojson_clean$Amount_Millions, na.rm = TRUE),
+                  value = c(0, max(combined_geojson_clean$Amount_Millions, na.rm = TRUE)))
+    ),
+    
+    mainPanel(
+      fluidRow(
+        column(6, div(class = "well",
+                      h4("Total Projects"),
+                      div(class = "number-box", textOutput("project_count")))),
+        column(6, div(class = "well",
+                      h4("Total Investment (USD Billions)"),
+                      div(class = "number-box", textOutput("total_investment"))))
+      ),
+      fluidRow(
+        column(8, leafletOutput("map", height = "500px")),
+        column(4, 
+               plotlyOutput("sector_plot", height = "300px"),
+               plotlyOutput("status_plot", height = "300px"))
+      )
+    )
+  )
+)
+
+# ============= Shiny Server =============
+server <- function(input, output, session) {
+  
+  # Reactive filtered dataset
+  filtered_data <- reactive({
+    data <- combined_geojson_clean
+    
+    if (input$region_filter != "All") {
+      data <- data %>% 
+        filter(`Recipient Region` == input$region_filter)
+    }
+    
+    if (input$sector_filter != "All") {
+      data <- data %>% 
+        filter(Sector.Name == input$sector_filter)
+    }
+    
+    if (length(input$status_filter) > 0) {
+      data <- data %>% 
+        filter(Status %in% input$status_filter)
+    }
+    
+    data <- data %>%
+      filter(Amount_Millions >= input$amount_filter[1],
+             Amount_Millions <= input$amount_filter[2])
+    
+    data
+  })
+  
+  # Summary statistics
+  output$project_count <- renderText({
+    formatC(nrow(filtered_data()), big.mark=",")
+  })
+  
+  output$total_investment <- renderText({
+    sum_billions <- sum(filtered_data()$Amount_Millions, na.rm = TRUE) / 1000
+    format_currency(sum_billions)
+  })
+  
+  # Map
+  output$map <- renderLeaflet({
+    req(filtered_data())
+    pal <- colorNumeric("YlOrRd", domain = filtered_data()$Amount_Millions)
+    
+    leaflet(filtered_data()) %>%
+      addProviderTiles("CartoDB.Positron") %>%
+      addPolygons(
+        color = "darkgreen",
+        weight = 1,
+        fillColor = ~pal(Amount_Millions),
+        fillOpacity = 0.7,
+        highlightOptions = highlightOptions(
+          weight = 2,
+          color = "black",
+          fillOpacity = 0.9
+        ),
+        popup = ~paste(
+          "<strong>Title:</strong>", Title, "<br>",
+          "<strong>Amount:</strong>", format_currency(Amount_Millions), "M<br>",
+          "<strong>Status:</strong>", Status, "<br>",
+          "<strong>Sector:</strong>", Sector.Name
+        )
+      ) %>%
+      addLegend(
+        position = "bottomright",
+        pal = pal,
+        values = ~Amount_Millions,
+        title = "Investment (USD M)",
+        opacity = 0.7
+      )
+  })
+  
+  # Sector plot
+  output$sector_plot <- renderPlotly({
+    sector_summary <- filtered_data() %>%
+      st_drop_geometry() %>%
+      group_by(Sector.Name) %>%
+      summarise(Total = sum(Amount_Millions, na.rm = TRUE)) %>%
+      arrange(desc(Total))
+    
+    plot_ly(sector_summary, 
+            x = ~Sector.Name, 
+            y = ~Total,
+            type = "bar",
+            marker = list(color = "lightgreen")) %>%
+      layout(title = "Investment by Sector",
+             xaxis = list(title = "", tickangle = 45),
+             yaxis = list(title = "USD Millions"))
+  })
+  
+  # Status plot
+  output$status_plot <- renderPlotly({
+    status_summary <- filtered_data() %>%
+      st_drop_geometry() %>%
+      group_by(Status) %>%
+      summarise(Count = n())
+    
+    plot_ly(status_summary,
+            labels = ~Status,
+            values = ~Count,
+            type = "pie",
+            marker = list(colors = c("#2ecc71", "#3498db", "#e74c3c"))) %>%
+      layout(title = "Project Status Distribution")
+  })
+}
+
+# ============= Run App =============
+shinyApp(ui = ui, server = server)

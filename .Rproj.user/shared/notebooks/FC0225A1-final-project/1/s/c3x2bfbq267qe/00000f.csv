@@ -1,0 +1,4 @@
+"0","geojson_list <- lapply(geojson_files, st_read, quiet = TRUE)"
+"0",""
+"0","# Name each element in the list with the corresponding file name (optional)"
+"0","names(geojson_list) <- basename(geojson_files)"
