@@ -1,0 +1,241 @@
+---
+title: "Aspect-Based Sentiment Analysis"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
+
+I implemented an **aspect-based sentiment analysis** to uncover insights from hotel reviews, focusing on key aspects: **location**, **service**, **room**, **staff**, **bed**, **internet** and **beach**. This analysis helps break down overall feedback into actionable insights for each category.
+
+### **Key Steps**
+
+1.  **Data Preprocessing**: Cleaned and prepared reviews for analysis to ensure consistency.
+2.  **Sentiment Classification**: Used **Hugging Face's DistilBERT**, a cutting-edge machine learning model, to classify sentiments as positive or negative for each aspect.
+3.  **Aspect-Specific Analysis**:
+    -   For each review, I generated prompts like, *"What do you think about the service?"* to extract aspect-focused sentiment.
+    -   If an aspect wasn't mentioned, it was marked as **'Not Mentioned'**.
+
+### **Efficiency at Scale**
+
+To analyze thousands of reviews efficiently, I employed **multithreading**, speeding up the process while maintaining accuracy.
+
+### **Data Visualization**
+
+I structured the results into interactive visualizations, including: - **Sentiment Scores**: Displaying the average sentiment for each aspect. - **Radar Charts**: Providing an intuitive overview of customer perceptions.
+
+```{python}
+import pandas as pd
+import numpy as np
+import re
+from sklearn.feature_extraction.text import TfidfVectorizer
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.util import ngrams
+from collections import Counter
+import nltk
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import classification_report, accuracy_score
+
+import pandas as pd
+import re
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import nltk
+```
+
+```{python}
+import pandas as pd
+import re
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import nltk
+
+# Load data
+df = pd.read_csv('~/Downloads/tripadvisor_hotel_reviews.csv')
+
+# Create the 'word_length' column first
+df["word_length"] = df["Review"].apply(len)
+
+# Now filter reviews with 'word_length' <= 3000
+df = df[df['word_length'] <= 3000]
+
+# Display a sample to confirm
+print(df.head())
+```
+```{python}
+# Text cleaning function
+def clean_text(text):
+    text = text.lower()  # Convert to lowercase
+    text = re.sub(r'[^\w\s]', '', text)  # Remove punctuation
+    text = re.sub(r'\d+', '', text)  # Remove numbers
+    text = re.sub(r'\s+', ' ', text).strip()  # Remove extra whitespace
+    return text
+
+# Apply text cleaning
+df.loc[:, 'cleaned_review'] = df['Review'].apply(clean_text)
+```
+
+
+
+```{python}
+## Define aspects
+aspects = ['location', 'service', 'room', 'staff', 'bed', 'internet', 'beach']
+
+import pandas as pd
+from transformers import pipeline
+from concurrent.futures import ThreadPoolExecutor
+from tqdm import tqdm
+
+df_sample = df.sample(1000, random_state=42) 
+df_sample['cleaned_review'] = df_sample['Review'].apply(clean_text)
+
+aspect_sentiment_pipeline = pipeline(
+    "text-classification",
+    model="distilbert-base-uncased-finetuned-sst-2-english",
+    framework="pt",  # Force PyTorch
+    truncation=True,
+    padding=True
+)
+
+# Function to handle missing aspects and perform sentiment analysis
+def analyze_aspect_sentiments_with_missing_handling(review, aspects):
+    aspect_sentiments = {}
+    for aspect in aspects:
+        # Check if the aspect is mentioned in the review
+        if aspect in review:
+            text = f"{review} What do you think about the {aspect}?"
+            result = aspect_sentiment_pipeline(text)
+            aspect_sentiments[aspect] = {
+                'label': result[0]['label'],  # Positive, Neutral, or Negative
+                'score': result[0]['score'] if result[0]['label'] == 'POSITIVE' else -result[0]['score']
+            }
+        else:
+            # Assign default value if aspect is not mentioned
+            aspect_sentiments[aspect] = {
+                'label': 'Not Mentioned',
+                'score': None
+            }
+    return aspect_sentiments
+# Apply the function using multithreading for efficiency
+with ThreadPoolExecutor(max_workers=4) as executor:
+    results = list(tqdm(executor.map(lambda x: analyze_aspect_sentiments_with_missing_handling(x, aspects), 
+                                     df_sample['cleaned_review']), 
+                        total=len(df_sample)))
+
+# Add results to the DataFrame
+df_sample['aspect_sentiments'] = results
+
+# Extract aspect scores into a separate DataFrame
+aspect_scores_df = pd.json_normalize(df_sample['aspect_sentiments'])
+
+print(df_sample[['Review', 'aspect_sentiments']].head())
+```
+
+```{python}
+label_columns = [col for col in aspect_scores_df.columns if '.label' in col]
+
+# Count occurrences of each label for each aspect
+label_counts = {}
+for col in label_columns:
+    aspect = col.split('.')[0]
+    # Filter out 'Not Mentioned'
+    label_counts[aspect] = aspect_scores_df[col].value_counts()
+
+# Convert to DataFrame
+label_counts_df = pd.DataFrame(label_counts).fillna(0)
+
+# Remove the 'Not Mentioned' row if it exists
+label_counts_df = label_counts_df.loc[label_counts_df.index != 'Not Mentioned']
+
+# Plot a bar chart
+label_counts_df.plot(kind='bar', figsize=(12, 6), colormap='viridis')
+plt.title("Sentiment Distribution Across Aspects")
+plt.xlabel("Sentiment Labels")
+plt.ylabel("Count")
+plt.xticks(rotation=0)
+plt.legend(title="Aspects", loc='upper right')
+plt.show()
+```
+
+This bar chart illustrates the sentiment distribution across various aspects (e.g., location, service, and room) with both positive and negative labels. It highlights that certain aspects like "room" and "service" have higher frequencies of both positive and negative sentiments compared to others.
+
+```{python}
+# Calculate mean scores for each aspect
+mean_scores = aspect_scores_df[[col for col in aspect_scores_df.columns if '.score' in col]].mean()
+
+# Prepare heatmap data
+heatmap_data = pd.DataFrame(mean_scores).T
+heatmap_data.columns = [col.split('.')[0] for col in heatmap_data.columns]
+
+# Plot heatmap
+plt.figure(figsize=(10, 4))
+sns.heatmap(heatmap_data, annot=True, cmap="coolwarm", cbar=True, fmt=".2f")
+plt.title("Mean Sentiment Scores for Aspects")
+plt.xlabel("Aspects")
+plt.ylabel("")
+plt.show()
+```
+
+This heatmap shows the mean sentiment scores for various aspects, with positive scores (e.g., location: 0.31, staff: 0.29) indicating favorable sentiment and negative scores (e.g., internet: -0.13, beach: -0.03) reflecting dissatisfaction. The color gradient visually emphasizes the sentiment polarity, with red for positive and blue for negative sentiments.
+
+```{python}
+import plotly.graph_objects as go
+import numpy as np
+
+# Calculate mean sentiment scores
+mean_scores = aspect_scores_df[[col for col in aspect_scores_df.columns if '.score' in col]].mean()
+aspects = [col.split('.')[0] for col in mean_scores.index]
+
+# Radar chart
+fig = go.Figure()
+fig.add_trace(go.Scatterpolar(
+    r=mean_scores,
+    theta=aspects,
+    fill='toself',
+    name='Average Sentiment Scores'
+))
+
+fig.update_layout(
+    polar=dict(radialaxis=dict(visible=True, range=[-1, 1])),
+    title="Aspect-Based Sentiment Radar Chart",
+    showlegend=True
+)
+fig.show()
+```
+This radar chart visualizes the average sentiment scores across various aspects, highlighting the differences in customer sentiment. Positive aspects like "location" and "staff" are closer to 1, while negative aspects like "internet" and "beach" are closer to -1, showcasing the strengths and weaknesses in these areas.
+
+```{python}
+import plotly.express as px
+
+# Prepare data for the sunburst chart
+label_data = []
+for aspect in ['location', 'service', 'room', 'staff', 'bed', 'internet', 'beach']:
+    labels = aspect_scores_df[f'{aspect}.label'].value_counts()
+    for label, count in labels.items():
+        # Exclude 'Not Mentioned'
+        if label != 'Not Mentioned':
+            label_data.append({'Aspect': aspect, 'Label': label, 'Count': count})
+
+label_df = pd.DataFrame(label_data)
+
+# Sunburst chart
+fig = px.sunburst(
+    label_df,
+    path=['Aspect', 'Label'],
+    values='Count',
+    title="Aspect-Based Sentiment Distribution (Sunburst)",
+    color='Count',
+    color_continuous_scale='Viridis'
+)
+
+fig.show()
+
+```
+
+This sunburst chart illustrates the distribution of positive and negative sentiments across various aspects, such as room, staff, and location. The color intensity and size of the segments represent the frequency of sentiments, with aspects like "room" and "staff" showing a higher prevalence of positive feedback compared to aspects like "internet" and "beach."
+

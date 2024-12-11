@@ -1,0 +1,167 @@
+---
+title: "Term Frequency and N-gram Analysis"
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
+
+I explored the linguistic patterns in guest reviews through term frequency and n-gram analysis (bigrams and trigrams). These techniques highlight recurring phrases that reflect customer priorities and recurring themes.
+
+### **Key Steps**
+
+1.  **Term Frequency**:
+
+-   Tokenized and cleaned text data to calculate the frequency of individual words.
+-   Identified the most common words, excluding generic stopwords, to reveal dominant topics like "service," "clean," and "location."
+
+2.  **N-gram Analysis**:
+
+-   Extracted bigrams (two-word combinations) and trigrams (three-word combinations) to capture contextual patterns.
+-   Normalized n-grams (e.g., treating "great hotel" and "hotel great" as identical) for more meaningful insights.
+-   Applied manual filters to exclude irrelevant or uninformative n-grams (e.g., "ca nt," "did not").
+```{python}
+import pandas as pd
+import numpy as np
+import re
+from sklearn.feature_extraction.text import TfidfVectorizer
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.util import ngrams
+from collections import Counter
+import nltk
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import classification_report, accuracy_score
+```
+
+```{python}
+import pandas as pd
+import re
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import nltk
+
+# Load data
+df = pd.read_csv('~/Downloads/tripadvisor_hotel_reviews.csv')
+
+# Create the 'word_length' column first
+df["word_length"] = df["Review"].apply(len)
+
+# Now filter reviews with 'word_length' <= 3000
+df = df[df['word_length'] <= 3000]
+
+# Display a sample to confirm
+print(df.head())
+```
+
+```{python}
+# Text cleaning function
+def clean_text(text):
+    text = text.lower()  # Convert to lowercase
+    text = re.sub(r'[^\w\s]', '', text)  # Remove punctuation
+    text = re.sub(r'\d+', '', text)  # Remove numbers
+    text = re.sub(r'\s+', ' ', text).strip()  # Remove extra whitespace
+    return text
+
+# Apply text cleaning
+df.loc[:, 'cleaned_review'] = df['Review'].apply(clean_text)
+```
+
+```{python}
+from nltk.util import ngrams
+from nltk.corpus import stopwords
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+from collections import Counter
+import nltk
+
+# Step 1: Download Stopwords
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
+
+# Function to clean text (if not already done)
+def clean_text(text):
+    text = text.lower()  # Convert to lowercase
+    text = re.sub(r'[^\w\s]', '', text)  # Remove punctuation
+    text = re.sub(r'\d+', '', text)  # Remove numbers
+    return text
+
+# Assuming 'df' contains the 'Review' column
+# Preprocess reviews
+df['cleaned_review'] = df['Review'].apply(clean_text)
+
+# Function to generate n-grams from text
+def generate_ngrams(text, n):
+    tokens = text.split()  # Split text into words
+    return list(ngrams(tokens, n))  # Generate n-grams
+
+# Step 2: Generate bigrams and trigrams
+df['bigrams'] = df['cleaned_review'].apply(lambda x: generate_ngrams(x, 2))  # Bigrams
+df['trigrams'] = df['cleaned_review'].apply(lambda x: generate_ngrams(x, 3))  # Trigrams
+
+# Step 3: Flatten bigrams and trigrams into lists
+all_bigrams = [bigram for bigram_list in df['bigrams'] for bigram in bigram_list]
+all_trigrams = [trigram for trigram_list in df['trigrams'] for trigram in trigram_list]
+
+# Step 4: Normalize bigrams and trigrams (sort alphabetically to handle duplicates)
+def normalize_ngram(ngram):
+    return tuple(sorted(ngram))  # Sort words alphabetically in each n-gram
+
+normalized_bigrams = [normalize_ngram(bigram) for bigram in all_bigrams]
+normalized_trigrams = [normalize_ngram(trigram) for trigram in all_trigrams]
+
+# Step 5: Count frequencies of normalized bigrams and trigrams
+bigram_counts = Counter(normalized_bigrams)
+trigram_counts = Counter(normalized_trigrams)
+
+# Step 6: Exclude unwanted bigrams
+exclude_bigrams = [('ca', 'nt'), ('did', 'nt'), ('did', 'not')]
+
+def filter_exclude_bigrams(bigram_counts, exclude_list):
+    filtered_bigrams = {bigram: count for bigram, count in bigram_counts.items() if bigram not in exclude_list}
+    return filtered_bigrams
+
+filtered_bigram_counts = filter_exclude_bigrams(bigram_counts, exclude_bigrams)
+
+# Step 7: Get the most common bigrams and trigrams
+most_common_filtered_bigrams = Counter(filtered_bigram_counts).most_common(20)
+most_common_trigrams = trigram_counts.most_common(20)
+
+# Step 8: Convert results to DataFrames for visualization
+filtered_bigram_df = pd.DataFrame(most_common_filtered_bigrams, columns=['Bigram', 'Frequency'])
+filtered_bigram_df['Bigram'] = filtered_bigram_df['Bigram'].apply(lambda x: ' '.join(x))  # Convert tuples to strings
+
+trigram_df = pd.DataFrame(most_common_trigrams, columns=['Trigram', 'Frequency'])
+trigram_df['Trigram'] = trigram_df['Trigram'].apply(lambda x: ' '.join(x))  # Convert tuples to strings
+
+# Step 9: Visualization for Bigrams
+colors = plt.cm.viridis(np.linspace(0, 1, len(filtered_bigram_df)))  # Generate colors from a colormap
+
+plt.figure(figsize=(10, 6))
+plt.barh(filtered_bigram_df['Bigram'], filtered_bigram_df['Frequency'], color=colors)
+plt.title('Top 20 Filtered Bigrams in Reviews', fontsize=16)
+plt.xlabel('Frequency', fontsize=12)
+plt.ylabel('Bigrams', fontsize=12)
+plt.gca().invert_yaxis()
+plt.tight_layout()
+plt.show()
+
+# Step 10: Visualization for Trigrams
+colors = plt.cm.plasma(np.linspace(0, 1, len(trigram_df)))  # Use a different colormap for trigrams
+
+plt.figure(figsize=(10, 6))
+plt.barh(trigram_df['Trigram'], trigram_df['Frequency'], color=colors)
+plt.title('Top 20 Trigrams in Reviews', fontsize=16)
+plt.xlabel('Frequency', fontsize=12)
+plt.ylabel('Trigrams', fontsize=12)
+plt.gca().invert_yaxis()
+plt.tight_layout()
+plt.show()
+```
+
+Key aspect like **bed**, **internet** and **beach** were added based on this.
