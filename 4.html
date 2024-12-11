@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>DSIII_Showcase_Yixin - Aspect-Based Sentiment Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script type="text/javascript">
+window.PlotlyConfig = {MathJaxConfig: 'local'};
+if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+if (typeof require !== 'undefined') {
+require.undef("plotly");
+requirejs.config({
+    paths: {
+        'plotly': ['https://cdn.plot.ly/plotly-2.12.1.min']
+    }
+});
+require(['plotly'], function(Plotly) {
+    window._Plotly = Plotly;
+});
+}
+</script>
+
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">DSIII_Showcase_Yixin</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html" rel="" target="">
+ <span class="menu-text">EDA_Cleaning</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./3.html" rel="" target="">
+ <span class="menu-text">N-gram Analysis</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./4.html" rel="" target="" aria-current="page">
+ <span class="menu-text">Aspect-Based Sentiment Analysis</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#key-steps" id="toc-key-steps" class="nav-link active" data-scroll-target="#key-steps"><strong>Key Steps</strong></a></li>
+  <li><a href="#efficiency-at-scale" id="toc-efficiency-at-scale" class="nav-link" data-scroll-target="#efficiency-at-scale"><strong>Efficiency at Scale</strong></a></li>
+  <li><a href="#data-visualization" id="toc-data-visualization" class="nav-link" data-scroll-target="#data-visualization"><strong>Data Visualization</strong></a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Aspect-Based Sentiment Analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>I implemented an <strong>aspect-based sentiment analysis</strong> to uncover insights from hotel reviews, focusing on key aspects: <strong>location</strong>, <strong>service</strong>, <strong>room</strong>, <strong>staff</strong>, <strong>bed</strong>, <strong>internet</strong> and <strong>beach</strong>. This analysis helps break down overall feedback into actionable insights for each category.</p>
+<section id="key-steps" class="level3">
+<h3 class="anchored" data-anchor-id="key-steps"><strong>Key Steps</strong></h3>
+<ol type="1">
+<li><strong>Data Preprocessing</strong>: Cleaned and prepared reviews for analysis to ensure consistency.</li>
+<li><strong>Sentiment Classification</strong>: Used <strong>Hugging Face’s DistilBERT</strong>, a cutting-edge machine learning model, to classify sentiments as positive or negative for each aspect.</li>
+<li><strong>Aspect-Specific Analysis</strong>:
+<ul>
+<li>For each review, I generated prompts like, <em>“What do you think about the service?”</em> to extract aspect-focused sentiment.</li>
+<li>If an aspect wasn’t mentioned, it was marked as <strong>‘Not Mentioned’</strong>.</li>
+</ul></li>
+</ol>
+</section>
+<section id="efficiency-at-scale" class="level3">
+<h3 class="anchored" data-anchor-id="efficiency-at-scale"><strong>Efficiency at Scale</strong></h3>
+<p>To analyze thousands of reviews efficiently, I employed <strong>multithreading</strong>, speeding up the process while maintaining accuracy.</p>
+</section>
+<section id="data-visualization" class="level3">
+<h3 class="anchored" data-anchor-id="data-visualization"><strong>Data Visualization</strong></h3>
+<p>I structured the results into interactive visualizations, including: - <strong>Sentiment Scores</strong>: Displaying the average sentiment for each aspect. - <strong>Radar Charts</strong>: Providing an intuitive overview of customer perceptions.</p>
+<div class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.corpus <span class="im">import</span> stopwords</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.tokenize <span class="im">import</span> word_tokenize</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.util <span class="im">import</span> ngrams</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nltk</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.naive_bayes <span class="im">import</span> MultinomialNB</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report, accuracy_score</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.corpus <span class="im">import</span> stopwords</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.tokenize <span class="im">import</span> word_tokenize</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nltk</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.corpus <span class="im">import</span> stopwords</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.tokenize <span class="im">import</span> word_tokenize</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nltk</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">'~/Downloads/tripadvisor_hotel_reviews.csv'</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the 'word_length' column first</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"word_length"</span>] <span class="op">=</span> df[<span class="st">"Review"</span>].<span class="bu">apply</span>(<span class="bu">len</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Now filter reviews with 'word_length' &lt;= 3000</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[df[<span class="st">'word_length'</span>] <span class="op">&lt;=</span> <span class="dv">3000</span>]</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Display a sample to confirm</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                              Review  Rating  word_length
+0  nice hotel expensive parking got good deal sta...       4          593
+1  ok nothing special charge diamond member hilto...       2         1689
+2  nice rooms not 4* experience hotel monaco seat...       3         1427
+3  unique, great stay, wonderful time hotel monac...       5          600
+4  great stay great stay, went seahawk game aweso...       5         1281</code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="3">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Text cleaning function</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_text(text):</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> text.lower()  <span class="co"># Convert to lowercase</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> re.sub(<span class="vs">r'[^\w\s]'</span>, <span class="st">''</span>, text)  <span class="co"># Remove punctuation</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> re.sub(<span class="vs">r'\d+'</span>, <span class="st">''</span>, text)  <span class="co"># Remove numbers</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> re.sub(<span class="vs">r'\s+'</span>, <span class="st">' '</span>, text).strip()  <span class="co"># Remove extra whitespace</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> text</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply text cleaning</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>df.loc[:, <span class="st">'cleaned_review'</span>] <span class="op">=</span> df[<span class="st">'Review'</span>].<span class="bu">apply</span>(clean_text)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="4">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Define aspects</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>aspects <span class="op">=</span> [<span class="st">'location'</span>, <span class="st">'service'</span>, <span class="st">'room'</span>, <span class="st">'staff'</span>, <span class="st">'bed'</span>, <span class="st">'internet'</span>, <span class="st">'beach'</span>]</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> transformers <span class="im">import</span> pipeline</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> concurrent.futures <span class="im">import</span> ThreadPoolExecutor</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tqdm <span class="im">import</span> tqdm</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>df_sample <span class="op">=</span> df.sample(<span class="dv">1000</span>, random_state<span class="op">=</span><span class="dv">42</span>) </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>df_sample[<span class="st">'cleaned_review'</span>] <span class="op">=</span> df_sample[<span class="st">'Review'</span>].<span class="bu">apply</span>(clean_text)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>aspect_sentiment_pipeline <span class="op">=</span> pipeline(</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">"text-classification"</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span><span class="st">"distilbert-base-uncased-finetuned-sst-2-english"</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    framework<span class="op">=</span><span class="st">"pt"</span>,  <span class="co"># Force PyTorch</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    truncation<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    padding<span class="op">=</span><span class="va">True</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to handle missing aspects and perform sentiment analysis</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> analyze_aspect_sentiments_with_missing_handling(review, aspects):</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    aspect_sentiments <span class="op">=</span> {}</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> aspect <span class="kw">in</span> aspects:</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Check if the aspect is mentioned in the review</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> aspect <span class="kw">in</span> review:</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>            text <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>review<span class="sc">}</span><span class="ss"> What do you think about the </span><span class="sc">{</span>aspect<span class="sc">}</span><span class="ss">?"</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>            result <span class="op">=</span> aspect_sentiment_pipeline(text)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>            aspect_sentiments[aspect] <span class="op">=</span> {</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>                <span class="st">'label'</span>: result[<span class="dv">0</span>][<span class="st">'label'</span>],  <span class="co"># Positive, Neutral, or Negative</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>                <span class="st">'score'</span>: result[<span class="dv">0</span>][<span class="st">'score'</span>] <span class="cf">if</span> result[<span class="dv">0</span>][<span class="st">'label'</span>] <span class="op">==</span> <span class="st">'POSITIVE'</span> <span class="cf">else</span> <span class="op">-</span>result[<span class="dv">0</span>][<span class="st">'score'</span>]</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Assign default value if aspect is not mentioned</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>            aspect_sentiments[aspect] <span class="op">=</span> {</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>                <span class="st">'label'</span>: <span class="st">'Not Mentioned'</span>,</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>                <span class="st">'score'</span>: <span class="va">None</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>            }</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> aspect_sentiments</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the function using multithreading for efficiency</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> ThreadPoolExecutor(max_workers<span class="op">=</span><span class="dv">4</span>) <span class="im">as</span> executor:</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> <span class="bu">list</span>(tqdm(executor.<span class="bu">map</span>(<span class="kw">lambda</span> x: analyze_aspect_sentiments_with_missing_handling(x, aspects), </span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>                                     df_sample[<span class="st">'cleaned_review'</span>]), </span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>                        total<span class="op">=</span><span class="bu">len</span>(df_sample)))</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Add results to the DataFrame</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>df_sample[<span class="st">'aspect_sentiments'</span>] <span class="op">=</span> results</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract aspect scores into a separate DataFrame</span></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>aspect_scores_df <span class="op">=</span> pd.json_normalize(df_sample[<span class="st">'aspect_sentiments'</span>])</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df_sample[[<span class="st">'Review'</span>, <span class="st">'aspect_sentiments'</span>]].head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>/Users/yixin/anaconda3/lib/python3.11/site-packages/transformers/utils/generic.py:441: FutureWarning:
+
+`torch.utils._pytree._register_pytree_node` is deprecated. Please use `torch.utils._pytree.register_pytree_node` instead.
+
+/Users/yixin/anaconda3/lib/python3.11/site-packages/transformers/utils/generic.py:309: FutureWarning:
+
+`torch.utils._pytree._register_pytree_node` is deprecated. Please use `torch.utils._pytree.register_pytree_node` instead.
+
+huggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+To disable this warning, you can either:
+    - Avoid using `tokenizers` before the fork if possible
+    - Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
+  0%|          | 0/1000 [00:00&lt;?, ?it/s]  0%|          | 1/1000 [00:00&lt;12:55,  1.29it/s]  0%|          | 2/1000 [00:01&lt;08:04,  2.06it/s]  0%|          | 3/1000 [00:01&lt;06:19,  2.63it/s]  0%|          | 4/1000 [00:01&lt;07:07,  2.33it/s]  1%|          | 10/1000 [00:02&lt;02:07,  7.76it/s]  1%|▏         | 13/1000 [00:02&lt;02:00,  8.18it/s]  2%|▏         | 17/1000 [00:03&lt;02:21,  6.97it/s]  2%|▏         | 23/1000 [00:03&lt;01:29, 10.86it/s]  3%|▎         | 30/1000 [00:03&lt;01:01, 15.69it/s]  3%|▎         | 33/1000 [00:03&lt;01:02, 15.58it/s]  4%|▎         | 36/1000 [00:04&lt;01:16, 12.64it/s]  4%|▍         | 38/1000 [00:05&lt;02:51,  5.62it/s]  6%|▌         | 56/1000 [00:05&lt;01:09, 13.59it/s]  6%|▋         | 63/1000 [00:05&lt;00:54, 17.23it/s]  7%|▋         | 66/1000 [00:06&lt;00:51, 18.13it/s]  7%|▋         | 69/1000 [00:06&lt;00:54, 17.09it/s]  7%|▋         | 72/1000 [00:06&lt;00:54, 16.88it/s]  8%|▊         | 75/1000 [00:07&lt;01:34,  9.82it/s]  9%|▉         | 88/1000 [00:07&lt;00:58, 15.63it/s] 10%|▉         | 96/1000 [00:07&lt;00:44, 20.46it/s] 10%|█         | 100/1000 [00:08&lt;00:51, 17.40it/s] 10%|█         | 103/1000 [00:08&lt;00:48, 18.52it/s] 11%|█         | 106/1000 [00:08&lt;01:01, 14.48it/s] 11%|█         | 109/1000 [00:09&lt;01:53,  7.86it/s] 12%|█▏        | 121/1000 [00:09&lt;00:56, 15.50it/s] 12%|█▎        | 125/1000 [00:10&lt;00:52, 16.82it/s] 13%|█▎        | 128/1000 [00:10&lt;01:06, 13.09it/s] 13%|█▎        | 133/1000 [00:11&lt;01:15, 11.53it/s] 14%|█▍        | 138/1000 [00:11&lt;01:03, 13.49it/s] 14%|█▍        | 142/1000 [00:11&lt;00:55, 15.33it/s] 15%|█▍        | 147/1000 [00:11&lt;01:04, 13.15it/s] 15%|█▌        | 150/1000 [00:12&lt;00:59, 14.37it/s] 15%|█▌        | 153/1000 [00:12&lt;00:52, 16.15it/s] 16%|█▌        | 156/1000 [00:12&lt;01:01, 13.67it/s] 16%|█▌        | 160/1000 [00:12&lt;00:54, 15.50it/s] 17%|█▋        | 166/1000 [00:12&lt;00:45, 18.37it/s] 17%|█▋        | 169/1000 [00:14&lt;01:51,  7.44it/s] 18%|█▊        | 177/1000 [00:14&lt;01:08, 11.97it/s] 18%|█▊        | 183/1000 [00:14&lt;00:50, 16.15it/s] 19%|█▊        | 187/1000 [00:15&lt;01:07, 12.11it/s] 19%|█▉        | 193/1000 [00:15&lt;01:03, 12.68it/s] 20%|█▉        | 197/1000 [00:15&lt;01:08, 11.77it/s] 20%|██        | 200/1000 [00:16&lt;01:26,  9.30it/s] 20%|██        | 202/1000 [00:16&lt;01:26,  9.26it/s] 21%|██        | 209/1000 [00:16&lt;00:56, 14.05it/s] 21%|██        | 212/1000 [00:17&lt;00:57, 13.76it/s] 22%|██▏       | 215/1000 [00:17&lt;00:52, 14.99it/s] 22%|██▏       | 217/1000 [00:17&lt;00:53, 14.59it/s] 22%|██▏       | 220/1000 [00:17&lt;01:05, 11.92it/s] 22%|██▏       | 224/1000 [00:17&lt;00:49, 15.77it/s] 23%|██▎       | 228/1000 [00:18&lt;00:55, 13.90it/s] 23%|██▎       | 230/1000 [00:18&lt;00:52, 14.69it/s] 23%|██▎       | 233/1000 [00:18&lt;00:50, 15.05it/s] 24%|██▎       | 237/1000 [00:18&lt;00:48, 15.71it/s] 24%|██▍       | 239/1000 [00:18&lt;00:51, 14.77it/s] 24%|██▍       | 242/1000 [00:19&lt;00:55, 13.77it/s] 25%|██▍       | 248/1000 [00:19&lt;00:37, 20.28it/s] 25%|██▌       | 252/1000 [00:19&lt;00:31, 23.53it/s] 26%|██▌       | 255/1000 [00:20&lt;01:04, 11.52it/s] 26%|██▌       | 259/1000 [00:20&lt;01:26,  8.61it/s] 27%|██▋       | 269/1000 [00:21&lt;00:58, 12.40it/s] 27%|██▋       | 273/1000 [00:21&lt;00:54, 13.42it/s] 28%|██▊       | 275/1000 [00:21&lt;01:00, 11.91it/s] 28%|██▊       | 280/1000 [00:22&lt;00:48, 14.80it/s] 28%|██▊       | 283/1000 [00:22&lt;00:57, 12.47it/s] 28%|██▊       | 285/1000 [00:22&lt;01:14,  9.57it/s] 29%|██▉       | 293/1000 [00:23&lt;00:46, 15.36it/s] 30%|██▉       | 296/1000 [00:24&lt;01:26,  8.17it/s] 31%|███       | 312/1000 [00:24&lt;00:57, 12.07it/s] 32%|███▏      | 320/1000 [00:25&lt;00:45, 14.99it/s] 32%|███▏      | 324/1000 [00:25&lt;00:43, 15.56it/s] 33%|███▎      | 333/1000 [00:25&lt;00:34, 19.40it/s] 34%|███▎      | 336/1000 [00:25&lt;00:34, 19.01it/s] 34%|███▍      | 339/1000 [00:25&lt;00:33, 19.76it/s] 34%|███▍      | 342/1000 [00:26&lt;00:42, 15.66it/s] 34%|███▍      | 345/1000 [00:26&lt;00:42, 15.51it/s] 35%|███▍      | 349/1000 [00:26&lt;00:47, 13.63it/s] 35%|███▌      | 352/1000 [00:27&lt;01:03, 10.24it/s] 36%|███▌      | 358/1000 [00:27&lt;00:45, 14.04it/s] 36%|███▋      | 364/1000 [00:27&lt;00:33, 19.25it/s] 37%|███▋      | 367/1000 [00:28&lt;00:51, 12.17it/s] 37%|███▋      | 372/1000 [00:28&lt;00:47, 13.09it/s] 38%|███▊      | 380/1000 [00:29&lt;00:42, 14.56it/s] 38%|███▊      | 383/1000 [00:29&lt;00:53, 11.64it/s] 39%|███▉      | 388/1000 [00:30&lt;01:10,  8.64it/s] 40%|████      | 400/1000 [00:30&lt;00:41, 14.63it/s] 40%|████      | 405/1000 [00:30&lt;00:34, 17.02it/s] 41%|████      | 408/1000 [00:31&lt;00:35, 16.88it/s] 41%|████      | 411/1000 [00:31&lt;00:34, 17.32it/s] 41%|████▏     | 414/1000 [00:31&lt;00:41, 13.96it/s] 42%|████▏     | 419/1000 [00:31&lt;00:35, 16.59it/s] 42%|████▏     | 422/1000 [00:32&lt;00:40, 14.26it/s] 42%|████▎     | 425/1000 [00:32&lt;01:10,  8.21it/s] 43%|████▎     | 433/1000 [00:33&lt;00:50, 11.32it/s] 44%|████▍     | 439/1000 [00:33&lt;00:40, 13.96it/s] 44%|████▍     | 441/1000 [00:33&lt;00:39, 14.18it/s] 44%|████▍     | 444/1000 [00:34&lt;00:43, 12.82it/s] 45%|████▍     | 446/1000 [00:34&lt;01:08,  8.04it/s] 45%|████▌     | 452/1000 [00:35&lt;00:51, 10.62it/s] 45%|████▌     | 454/1000 [00:35&lt;01:21,  6.68it/s] 46%|████▋     | 463/1000 [00:36&lt;00:42, 12.76it/s] 47%|████▋     | 466/1000 [00:36&lt;00:49, 10.69it/s] 47%|████▋     | 469/1000 [00:36&lt;00:46, 11.54it/s] 47%|████▋     | 474/1000 [00:37&lt;00:46, 11.23it/s] 48%|████▊     | 478/1000 [00:37&lt;00:59,  8.72it/s] 49%|████▉     | 488/1000 [00:38&lt;00:34, 15.05it/s] 49%|████▉     | 491/1000 [00:38&lt;00:48, 10.49it/s] 50%|████▉     | 498/1000 [00:39&lt;00:58,  8.51it/s] 51%|█████     | 508/1000 [00:40&lt;00:54,  9.01it/s] 51%|█████▏    | 514/1000 [00:40&lt;00:41, 11.59it/s] 52%|█████▏    | 517/1000 [00:41&lt;00:37, 12.84it/s] 52%|█████▏    | 520/1000 [00:41&lt;00:43, 11.12it/s] 52%|█████▏    | 523/1000 [00:41&lt;00:38, 12.34it/s] 53%|█████▎    | 526/1000 [00:41&lt;00:36, 13.07it/s] 53%|█████▎    | 528/1000 [00:42&lt;00:36, 12.87it/s] 53%|█████▎    | 530/1000 [00:42&lt;00:55,  8.52it/s] 53%|█████▎    | 534/1000 [00:42&lt;00:48,  9.66it/s] 54%|█████▎    | 536/1000 [00:43&lt;00:52,  8.90it/s] 54%|█████▍    | 540/1000 [00:43&lt;00:39, 11.54it/s] 54%|█████▍    | 544/1000 [00:43&lt;00:35, 12.79it/s] 55%|█████▍    | 547/1000 [00:43&lt;00:31, 14.34it/s] 55%|█████▍    | 549/1000 [00:43&lt;00:33, 13.36it/s] 55%|█████▌    | 551/1000 [00:44&lt;00:32, 13.94it/s] 55%|█████▌    | 553/1000 [00:44&lt;00:36, 12.23it/s] 56%|█████▌    | 556/1000 [00:44&lt;00:41, 10.57it/s] 56%|█████▌    | 562/1000 [00:45&lt;00:35, 12.40it/s] 56%|█████▋    | 565/1000 [00:45&lt;00:38, 11.30it/s] 57%|█████▋    | 572/1000 [00:45&lt;00:23, 18.12it/s] 57%|█████▊    | 575/1000 [00:45&lt;00:26, 16.28it/s] 58%|█████▊    | 578/1000 [00:46&lt;00:35, 11.81it/s] 59%|█████▉    | 588/1000 [00:47&lt;00:45,  9.11it/s] 60%|██████    | 603/1000 [00:47&lt;00:22, 17.33it/s] 61%|██████    | 607/1000 [00:47&lt;00:20, 18.90it/s] 61%|██████    | 611/1000 [00:47&lt;00:19, 20.32it/s] 62%|██████▏   | 615/1000 [00:48&lt;00:28, 13.59it/s] 62%|██████▏   | 620/1000 [00:48&lt;00:24, 15.34it/s] 62%|██████▎   | 625/1000 [00:50&lt;00:43,  8.68it/s] 64%|██████▍   | 641/1000 [00:50&lt;00:21, 17.03it/s] 64%|██████▍   | 645/1000 [00:50&lt;00:20, 17.09it/s] 65%|██████▍   | 648/1000 [00:50&lt;00:19, 18.26it/s] 65%|██████▌   | 651/1000 [00:50&lt;00:22, 15.52it/s] 65%|██████▌   | 654/1000 [00:51&lt;00:32, 10.60it/s] 66%|██████▌   | 657/1000 [00:51&lt;00:31, 10.91it/s] 67%|██████▋   | 666/1000 [00:52&lt;00:23, 14.48it/s] 67%|██████▋   | 673/1000 [00:52&lt;00:17, 18.41it/s] 68%|██████▊   | 676/1000 [00:53&lt;00:26, 12.26it/s] 68%|██████▊   | 680/1000 [00:53&lt;00:21, 14.84it/s] 68%|██████▊   | 683/1000 [00:53&lt;00:24, 13.17it/s] 69%|██████▊   | 686/1000 [00:53&lt;00:25, 12.33it/s] 69%|██████▉   | 688/1000 [00:54&lt;00:30, 10.25it/s] 69%|██████▉   | 693/1000 [00:54&lt;00:21, 14.48it/s] 70%|██████▉   | 696/1000 [00:54&lt;00:19, 15.64it/s] 70%|██████▉   | 699/1000 [00:55&lt;00:33,  8.88it/s] 71%|███████   | 707/1000 [00:55&lt;00:19, 15.03it/s] 71%|███████   | 710/1000 [00:55&lt;00:27, 10.55it/s] 72%|███████▏  | 720/1000 [00:56&lt;00:25, 11.02it/s] 73%|███████▎  | 732/1000 [00:57&lt;00:16, 16.73it/s] 74%|███████▎  | 735/1000 [00:57&lt;00:16, 15.94it/s] 74%|███████▍  | 739/1000 [00:58&lt;00:27,  9.49it/s] 76%|███████▌  | 755/1000 [00:58&lt;00:12, 19.08it/s] 76%|███████▌  | 760/1000 [00:58&lt;00:12, 18.77it/s] 76%|███████▋  | 765/1000 [00:59&lt;00:14, 15.80it/s] 77%|███████▋  | 768/1000 [01:00&lt;00:26,  8.91it/s] 78%|███████▊  | 783/1000 [01:00&lt;00:14, 14.87it/s] 79%|███████▉  | 789/1000 [01:00&lt;00:12, 17.01it/s] 79%|███████▉  | 793/1000 [01:01&lt;00:12, 15.96it/s] 80%|████████  | 800/1000 [01:01&lt;00:12, 16.64it/s] 80%|████████  | 805/1000 [01:02&lt;00:20,  9.75it/s] 82%|████████▏ | 815/1000 [01:03&lt;00:13, 14.08it/s] 82%|████████▏ | 819/1000 [01:03&lt;00:12, 14.52it/s] 82%|████████▎ | 825/1000 [01:03&lt;00:10, 16.42it/s] 83%|████████▎ | 828/1000 [01:04&lt;00:13, 12.60it/s] 84%|████████▎ | 835/1000 [01:04&lt;00:10, 15.43it/s] 84%|████████▍ | 840/1000 [01:05&lt;00:16,  9.98it/s] 85%|████████▌ | 852/1000 [01:05&lt;00:08, 17.63it/s] 86%|████████▌ | 857/1000 [01:06&lt;00:10, 13.83it/s] 86%|████████▌ | 861/1000 [01:06&lt;00:08, 15.92it/s] 86%|████████▋ | 865/1000 [01:06&lt;00:08, 16.48it/s] 87%|████████▋ | 868/1000 [01:06&lt;00:10, 13.10it/s] 87%|████████▋ | 871/1000 [01:07&lt;00:15,  8.47it/s] 88%|████████▊ | 881/1000 [01:07&lt;00:08, 14.49it/s] 88%|████████▊ | 884/1000 [01:08&lt;00:08, 13.90it/s] 89%|████████▉ | 889/1000 [01:08&lt;00:06, 15.93it/s] 89%|████████▉ | 893/1000 [01:08&lt;00:08, 12.52it/s] 90%|█████████ | 900/1000 [01:09&lt;00:07, 13.87it/s] 91%|█████████ | 907/1000 [01:09&lt;00:05, 17.30it/s] 91%|█████████ | 911/1000 [01:10&lt;00:07, 12.70it/s] 92%|█████████▏| 922/1000 [01:10&lt;00:03, 19.59it/s] 92%|█████████▎| 925/1000 [01:10&lt;00:05, 13.45it/s] 93%|█████████▎| 928/1000 [01:11&lt;00:04, 14.60it/s] 93%|█████████▎| 931/1000 [01:11&lt;00:04, 13.83it/s] 94%|█████████▎| 935/1000 [01:11&lt;00:04, 14.04it/s] 94%|█████████▎| 937/1000 [01:11&lt;00:05, 12.21it/s] 94%|█████████▍| 941/1000 [01:12&lt;00:04, 12.03it/s] 94%|█████████▍| 944/1000 [01:12&lt;00:04, 13.91it/s] 95%|█████████▍| 949/1000 [01:12&lt;00:02, 17.31it/s] 95%|█████████▌| 953/1000 [01:13&lt;00:05,  9.06it/s] 97%|█████████▋| 966/1000 [01:13&lt;00:01, 19.55it/s] 97%|█████████▋| 971/1000 [01:13&lt;00:01, 18.85it/s] 98%|█████████▊| 975/1000 [01:13&lt;00:01, 19.54it/s] 98%|█████████▊| 979/1000 [01:14&lt;00:01, 19.83it/s] 98%|█████████▊| 982/1000 [01:14&lt;00:01, 10.63it/s] 98%|█████████▊| 985/1000 [01:15&lt;00:01, 11.27it/s] 99%|█████████▉| 988/1000 [01:15&lt;00:01,  9.71it/s] 99%|█████████▉| 991/1000 [01:16&lt;00:01,  6.21it/s]100%|██████████| 1000/1000 [01:16&lt;00:00, 13.04it/s]</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                  Review  \
+10957  worst exp, just got dissapointed, hotel midle ...   
+6644   great, ok place gets reviews run gamut right, ...   
+12619  did n't maid n't want re-write positive review...   
+15367  resort personality simpicity charm just got ba...   
+4290   wonderful stay, stayed hotel new year holiday ...   
+
+                                       aspect_sentiments  
+10957  {'location': {'label': 'Not Mentioned', 'score...  
+6644   {'location': {'label': 'Not Mentioned', 'score...  
+12619  {'location': {'label': 'NEGATIVE', 'score': -0...  
+15367  {'location': {'label': 'Not Mentioned', 'score...  
+4290   {'location': {'label': 'POSITIVE', 'score': 0....  </code></pre>
+</div>
+</div>
+<div class="cell" data-execution_count="5">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>label_columns <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> aspect_scores_df.columns <span class="cf">if</span> <span class="st">'.label'</span> <span class="kw">in</span> col]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Count occurrences of each label for each aspect</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>label_counts <span class="op">=</span> {}</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> col <span class="kw">in</span> label_columns:</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    aspect <span class="op">=</span> col.split(<span class="st">'.'</span>)[<span class="dv">0</span>]</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Filter out 'Not Mentioned'</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    label_counts[aspect] <span class="op">=</span> aspect_scores_df[col].value_counts()</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to DataFrame</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>label_counts_df <span class="op">=</span> pd.DataFrame(label_counts).fillna(<span class="dv">0</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove the 'Not Mentioned' row if it exists</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>label_counts_df <span class="op">=</span> label_counts_df.loc[label_counts_df.index <span class="op">!=</span> <span class="st">'Not Mentioned'</span>]</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot a bar chart</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>label_counts_df.plot(kind<span class="op">=</span><span class="st">'bar'</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>), colormap<span class="op">=</span><span class="st">'viridis'</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Sentiment Distribution Across Aspects"</span>)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Sentiment Labels"</span>)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Count"</span>)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>plt.xticks(rotation<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>plt.legend(title<span class="op">=</span><span class="st">"Aspects"</span>, loc<span class="op">=</span><span class="st">'upper right'</span>)</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="4_files/figure-html/cell-6-output-1.png" width="965" height="523"></p>
+</div>
+</div>
+<p>This bar chart illustrates the sentiment distribution across various aspects (e.g., location, service, and room) with both positive and negative labels. It highlights that certain aspects like “room” and “service” have higher frequencies of both positive and negative sentiments compared to others.</p>
+<div class="cell" data-execution_count="6">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate mean scores for each aspect</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>mean_scores <span class="op">=</span> aspect_scores_df[[col <span class="cf">for</span> col <span class="kw">in</span> aspect_scores_df.columns <span class="cf">if</span> <span class="st">'.score'</span> <span class="kw">in</span> col]].mean()</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare heatmap data</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>heatmap_data <span class="op">=</span> pd.DataFrame(mean_scores).T</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>heatmap_data.columns <span class="op">=</span> [col.split(<span class="st">'.'</span>)[<span class="dv">0</span>] <span class="cf">for</span> col <span class="kw">in</span> heatmap_data.columns]</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot heatmap</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">4</span>))</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>sns.heatmap(heatmap_data, annot<span class="op">=</span><span class="va">True</span>, cmap<span class="op">=</span><span class="st">"coolwarm"</span>, cbar<span class="op">=</span><span class="va">True</span>, fmt<span class="op">=</span><span class="st">".2f"</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Mean Sentiment Scores for Aspects"</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Aspects"</span>)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">""</span>)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="4_files/figure-html/cell-7-output-1.png" width="739" height="376"></p>
+</div>
+</div>
+<p>This heatmap shows the mean sentiment scores for various aspects, with positive scores (e.g., location: 0.31, staff: 0.29) indicating favorable sentiment and negative scores (e.g., internet: -0.13, beach: -0.03) reflecting dissatisfaction. The color gradient visually emphasizes the sentiment polarity, with red for positive and blue for negative sentiments.</p>
+<div class="cell" data-execution_count="7">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate mean sentiment scores</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>mean_scores <span class="op">=</span> aspect_scores_df[[col <span class="cf">for</span> col <span class="kw">in</span> aspect_scores_df.columns <span class="cf">if</span> <span class="st">'.score'</span> <span class="kw">in</span> col]].mean()</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>aspects <span class="op">=</span> [col.split(<span class="st">'.'</span>)[<span class="dv">0</span>] <span class="cf">for</span> col <span class="kw">in</span> mean_scores.index]</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Radar chart</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> go.Figure()</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>fig.add_trace(go.Scatterpolar(</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    r<span class="op">=</span>mean_scores,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    theta<span class="op">=</span>aspects,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    fill<span class="op">=</span><span class="st">'toself'</span>,</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">'Average Sentiment Scores'</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>fig.update_layout(</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    polar<span class="op">=</span><span class="bu">dict</span>(radialaxis<span class="op">=</span><span class="bu">dict</span>(visible<span class="op">=</span><span class="va">True</span>, <span class="bu">range</span><span class="op">=</span>[<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>])),</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Aspect-Based Sentiment Radar Chart"</span>,</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    showlegend<span class="op">=</span><span class="va">True</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+
+<div>                            <div id="2d2355fb-acbd-4ab9-99f6-1f1f5ddd4ade" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("2d2355fb-acbd-4ab9-99f6-1f1f5ddd4ade")) {                    Plotly.newPlot(                        "2d2355fb-acbd-4ab9-99f6-1f1f5ddd4ade",                        [{"fill":"toself","name":"Average Sentiment Scores","r":[0.3077977922894686,0.053801792897755586,0.13821569756099156,0.28805383949263674,0.05369789646075557,-0.12821971948700722,-0.03437665799289074],"theta":["location","service","room","staff","bed","internet","beach"],"type":"scatterpolar"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"polar":{"radialaxis":{"visible":true,"range":[-1,1]}},"title":{"text":"Aspect-Based Sentiment Radar Chart"},"showlegend":true},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('2d2355fb-acbd-4ab9-99f6-1f1f5ddd4ade');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</div>
+<p>This radar chart visualizes the average sentiment scores across various aspects, highlighting the differences in customer sentiment. Positive aspects like “location” and “staff” are closer to 1, while negative aspects like “internet” and “beach” are closer to -1, showcasing the strengths and weaknesses in these areas.</p>
+<div class="cell" data-execution_count="8">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare data for the sunburst chart</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>label_data <span class="op">=</span> []</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> aspect <span class="kw">in</span> [<span class="st">'location'</span>, <span class="st">'service'</span>, <span class="st">'room'</span>, <span class="st">'staff'</span>, <span class="st">'bed'</span>, <span class="st">'internet'</span>, <span class="st">'beach'</span>]:</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    labels <span class="op">=</span> aspect_scores_df[<span class="ss">f'</span><span class="sc">{</span>aspect<span class="sc">}</span><span class="ss">.label'</span>].value_counts()</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> label, count <span class="kw">in</span> labels.items():</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Exclude 'Not Mentioned'</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> label <span class="op">!=</span> <span class="st">'Not Mentioned'</span>:</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>            label_data.append({<span class="st">'Aspect'</span>: aspect, <span class="st">'Label'</span>: label, <span class="st">'Count'</span>: count})</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>label_df <span class="op">=</span> pd.DataFrame(label_data)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Sunburst chart</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> px.sunburst(</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    label_df,</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    path<span class="op">=</span>[<span class="st">'Aspect'</span>, <span class="st">'Label'</span>],</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    values<span class="op">=</span><span class="st">'Count'</span>,</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Aspect-Based Sentiment Distribution (Sunburst)"</span>,</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    color<span class="op">=</span><span class="st">'Count'</span>,</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>    color_continuous_scale<span class="op">=</span><span class="st">'Viridis'</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>fig.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+
+<div>                            <div id="5fcb9004-ad0f-4a2d-9556-e6baa80eeaa5" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script type="text/javascript">                require(["plotly"], function(Plotly) {                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("5fcb9004-ad0f-4a2d-9556-e6baa80eeaa5")) {                    Plotly.newPlot(                        "5fcb9004-ad0f-4a2d-9556-e6baa80eeaa5",                        [{"branchvalues":"total","customdata":[[107.0],[147.0],[56.0],[143.0],[377.0],[150.0],[210.0],[99.0],[166.0],[43.0],[274.0],[498.0],[166.0],[382.0],[103.15533980582525],[157.07667731629394],[50.35353535353536],[229.0767386091127],[445.8662857142857],[158.40506329113924],[320.9864864864865]],"domain":{"x":[0.0,1.0],"y":[0.0,1.0]},"hovertemplate":"labels=%{label}<br>Count_sum=%{value}<br>parent=%{parent}<br>id=%{id}<br>Count=%{color}<extra></extra>","ids":["beach/NEGATIVE","bed/NEGATIVE","internet/NEGATIVE","location/NEGATIVE","room/NEGATIVE","service/NEGATIVE","staff/NEGATIVE","beach/POSITIVE","bed/POSITIVE","internet/POSITIVE","location/POSITIVE","room/POSITIVE","service/POSITIVE","staff/POSITIVE","beach","bed","internet","location","room","service","staff"],"labels":["NEGATIVE","NEGATIVE","NEGATIVE","NEGATIVE","NEGATIVE","NEGATIVE","NEGATIVE","POSITIVE","POSITIVE","POSITIVE","POSITIVE","POSITIVE","POSITIVE","POSITIVE","beach","bed","internet","location","room","service","staff"],"marker":{"coloraxis":"coloraxis","colors":[107.0,147.0,56.0,143.0,377.0,150.0,210.0,99.0,166.0,43.0,274.0,498.0,166.0,382.0,103.15533980582525,157.07667731629394,50.35353535353536,229.0767386091127,445.8662857142857,158.40506329113924,320.9864864864865]},"name":"","parents":["beach","bed","internet","location","room","service","staff","beach","bed","internet","location","room","service","staff","","","","","","",""],"values":[107,147,56,143,377,150,210,99,166,43,274,498,166,382,206,313,99,417,875,316,592],"type":"sunburst"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"coloraxis":{"colorbar":{"title":{"text":"Count"}},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]]},"legend":{"tracegroupgap":0},"title":{"text":"Aspect-Based Sentiment Distribution (Sunburst)"}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('5fcb9004-ad0f-4a2d-9556-e6baa80eeaa5');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };                });            </script>        </div>
+</div>
+</div>
+<p>This sunburst chart illustrates the distribution of positive and negative sentiments across various aspects, such as room, staff, and location. The color intensity and size of the segments represent the frequency of sentiments, with aspects like “room” and “staff” showing a higher prevalence of positive feedback compared to aspects like “internet” and “beach.”</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

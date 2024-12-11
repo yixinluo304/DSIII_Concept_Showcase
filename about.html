@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>DSIII_Showcase_Yixin - About</title>
+<title>DSIII_Showcase_Yixin - EDA and Text Cleaning</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -117,11 +117,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
     <a class="nav-link" href="./index.html" rel="" target="">
- <span class="menu-text">Home</span></a>
+ <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link active" href="./about.html" rel="" target="" aria-current="page">
- <span class="menu-text">About</span></a>
+ <span class="menu-text">EDA_Cleaning</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./3.html" rel="" target="">
+ <span class="menu-text">N-gram Analysis</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./4.html" rel="" target="">
+ <span class="menu-text">Aspect-Based Sentiment Analysis</span></a>
   </li>  
 </ul>
             <div class="quarto-navbar-tools ms-auto">
@@ -135,14 +143,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#eda" id="toc-eda" class="nav-link active" data-scroll-target="#eda">EDA</a></li>
+  <li><a href="#text-cleaning" id="toc-text-cleaning" class="nav-link" data-scroll-target="#text-cleaning">Text Cleaning</a>
+  <ul class="collapse">
+  <li><a href="#remove-the-big-comments" id="toc-remove-the-big-comments" class="nav-link" data-scroll-target="#remove-the-big-comments">remove the big comments</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">About</h1>
+<h1 class="title">EDA and Text Cleaning</h1>
 </div>
 
 
@@ -157,15 +175,193 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>About this site</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Yixin Luo</p>
+<section id="eda" class="level2">
+<h2 class="anchored" data-anchor-id="eda">EDA</h2>
+<div class="cell" data-execution_count="1">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell" data-execution_count="2">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.corpus <span class="im">import</span> stopwords</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.tokenize <span class="im">import</span> word_tokenize</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.util <span class="im">import</span> ngrams</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nltk</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.naive_bayes <span class="im">import</span> MultinomialNB</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report, accuracy_score</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">## Load data</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">'~/Downloads/tripadvisor_hotel_reviews.csv'</span>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">## distribution of ratings</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">8</span>, <span class="dv">5</span>))</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>sns.countplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">'Rating'</span>, palette<span class="op">=</span><span class="st">'viridis'</span>)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Distribution of Ratings'</span>)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Rating'</span>)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Count'</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="about_files/figure-html/cell-3-output-1.png" width="676" height="449"></p>
+</div>
+</div>
+<section id="distribution-of-ratings-the-bar-chart-displays-the-frequency-of-ratings-from-1-to-5-highlighting-that-the-majority-of-users-gave-a-rating-of-5." class="level4">
+<h4 class="anchored" data-anchor-id="distribution-of-ratings-the-bar-chart-displays-the-frequency-of-ratings-from-1-to-5-highlighting-that-the-majority-of-users-gave-a-rating-of-5.">Distribution of Ratings: The bar chart displays the frequency of ratings from 1 to 5, highlighting that the majority of users gave a rating of 5.</h4>
+<div class="cell" data-execution_count="3">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Check the length of reviews</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"word_length"</span>] <span class="op">=</span> df[<span class="st">"Review"</span>].<span class="bu">apply</span>(<span class="bu">len</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>sns.histplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"word_length"</span>, hue<span class="op">=</span><span class="st">"Rating"</span>, multiple<span class="op">=</span><span class="st">"stack"</span>, palette<span class="op">=</span><span class="st">"bright"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Distribution of Text Lengths by Class'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Text Length'</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Frequency'</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="about_files/figure-html/cell-4-output-1.png" width="837" height="533"></p>
+</div>
+</div>
+</section>
+<section id="distribution-of-text-lengths-by-class-the-histogram-shows-the-distribution-of-review-text-lengths-segmented-by-rating-class-revealing-that-most-reviews-are-short-across-all-ratings." class="level4">
+<h4 class="anchored" data-anchor-id="distribution-of-text-lengths-by-class-the-histogram-shows-the-distribution-of-review-text-lengths-segmented-by-rating-class-revealing-that-most-reviews-are-short-across-all-ratings.">Distribution of Text Lengths by Class: The histogram shows the distribution of review text lengths, segmented by rating class, revealing that most reviews are short across all ratings.</h4>
+<div class="cell" data-execution_count="4">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Preprocess the text</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_text(text):</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> text.lower()  <span class="co"># Convert to lowercase</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> re.sub(<span class="vs">r'[^\w\s]'</span>, <span class="st">''</span>, text)  <span class="co"># Remove punctuation</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> re.sub(<span class="vs">r'\d+'</span>, <span class="st">''</span>, text)  <span class="co"># Remove numbers</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> text</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'cleaned_review'</span>] <span class="op">=</span> df[<span class="st">'Review'</span>].<span class="bu">apply</span>(clean_text)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Tokenize the text and count words</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>all_words <span class="op">=</span> <span class="st">' '</span>.join(df[<span class="st">'cleaned_review'</span>]).split()  <span class="co"># Combine all reviews and split into words</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>word_counts <span class="op">=</span> Counter(all_words)  <span class="co"># Count word frequencies</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Get the most common words</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>most_common_words <span class="op">=</span> word_counts.most_common(<span class="dv">20</span>)  <span class="co"># Top 20 most common words</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Most Common Words:"</span>, most_common_words)</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert to a DataFrame for better readability</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>most_common_df <span class="op">=</span> pd.DataFrame(most_common_words, columns<span class="op">=</span>[<span class="st">'Word'</span>, <span class="st">'Frequency'</span>])</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(most_common_df)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Horizontal visualization</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>plt.barh(most_common_df[<span class="st">'Word'</span>], most_common_df[<span class="st">'Frequency'</span>], color<span class="op">=</span><span class="st">'skyblue'</span>)</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Top 20 Most Common Words in Reviews'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Frequency'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Words'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>plt.gca().invert_yaxis()  <span class="co"># Invert y-axis to show highest frequency on top</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<pre><code>Most Common Words: [('hotel', 48864), ('room', 34324), ('not', 31525), ('great', 21094), ('nt', 19000), ('good', 16986), ('staff', 16213), ('stay', 15158), ('did', 13895), ('just', 12592), ('nice', 12409), ('rooms', 12024), ('no', 11620), ('location', 11043), ('stayed', 10469), ('service', 9975), ('time', 9824), ('night', 9728), ('beach', 9592), ('day', 9541)]
+        Word  Frequency
+0      hotel      48864
+1       room      34324
+2        not      31525
+3      great      21094
+4         nt      19000
+5       good      16986
+6      staff      16213
+7       stay      15158
+8        did      13895
+9       just      12592
+10      nice      12409
+11     rooms      12024
+12        no      11620
+13  location      11043
+14    stayed      10469
+15   service       9975
+16      time       9824
+17     night       9728
+18     beach       9592
+19       day       9541</code></pre>
 </div>
+<div class="cell-output cell-output-display">
+<p><img src="about_files/figure-html/cell-5-output-2.png" width="949" height="566"></p>
+</div>
+</div>
+</section>
+<section id="top-20-most-common-words-in-reviews-the-bar-chart-identifies-the-most-frequently-used-words-in-hotel-reviews-with-hotel-and-room-being-the-most-common-indicating-key-topics-of-discussion." class="level4">
+<h4 class="anchored" data-anchor-id="top-20-most-common-words-in-reviews-the-bar-chart-identifies-the-most-frequently-used-words-in-hotel-reviews-with-hotel-and-room-being-the-most-common-indicating-key-topics-of-discussion.">Top 20 Most Common Words in Reviews: The bar chart identifies the most frequently used words in hotel reviews, with “hotel” and “room” being the most common, indicating key topics of discussion.</h4>
+<hr>
+</section>
+</section>
+<section id="text-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="text-cleaning">Text Cleaning</h2>
+<section id="remove-the-big-comments" class="level3">
+<h3 class="anchored" data-anchor-id="remove-the-big-comments">remove the big comments</h3>
+<div class="cell" data-execution_count="5">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># remove the big comments</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[df[<span class="st">'word_length'</span>] <span class="op">&lt;=</span> <span class="dv">3000</span>]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"word_length"</span>] <span class="op">=</span> df[<span class="st">"Review"</span>].<span class="bu">apply</span>(<span class="bu">len</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>sns.histplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"word_length"</span>, hue<span class="op">=</span><span class="st">"Rating"</span>, multiple<span class="op">=</span><span class="st">"stack"</span>, palette<span class="op">=</span><span class="st">"bright"</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Distribution of Text Lengths by Class'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Text Length'</span>, fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Frequency'</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="about_files/figure-html/cell-6-output-1.png" width="825" height="533"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="6">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.corpus <span class="im">import</span> stopwords</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> nltk.tokenize <span class="im">import</span> word_tokenize</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> nltk</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Text cleaning function</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean_text(text):</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> text.lower()  <span class="co"># Convert to lowercase</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> re.sub(<span class="vs">r'[^\w\s]'</span>, <span class="st">''</span>, text)  <span class="co"># Remove punctuation</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> re.sub(<span class="vs">r'\d+'</span>, <span class="st">''</span>, text)  <span class="co"># Remove numbers</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> re.sub(<span class="vs">r'\s+'</span>, <span class="st">' '</span>, text).strip()  <span class="co"># Remove extra whitespace</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> text</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply text cleaning</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>df.loc[:, <span class="st">'cleaned_review'</span>] <span class="op">=</span> df[<span class="st">'Review'</span>].<span class="bu">apply</span>(clean_text)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
